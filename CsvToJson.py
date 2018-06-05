@@ -1,21 +1,26 @@
 #!/usr/bin/python3
 import os
+import sys
 import glob
 
 # Returns the indent to the first non-empty string, where the number of commas is the value of the indent
 def getIndent(line):
 	ind = 0
 	for str in line:
-		if (str.strip() == str) ind++
-		else return ind
+		if (str == '' or str.strip() == str):
+			ind = ind + 1
+		else:
+			print(line, " -- indent: ", ind)
+			return ind
+	print(line, " -- indent: -1")
 	return -1
 
 # Returns the number of non-empty values on this line of csv. Assumes there are no empty strings in-between.
 def count(line):
 	count = 0
 	for str in line:
-		if (str.strip() != str):
-			count++
+		if (str == '' or str.strip() != str):
+			count = count + 1
 	return count
 
 # Returns whitespace to indent the output file
@@ -38,28 +43,29 @@ def getValAtColumn(line, indent):
 	str = line[indent]
 	if(isANumber(str)):
 		return str
-	elif(str.tolower() == 'true' || str.tolower() == 'false' || str.tolower() == 'null'):
-		return str.tolower()
+	elif(str.lower() == 'true' or str.lower() == 'false' or str.lower() == 'null'):
+		return str.lower()
 	else:
-		return "\"" + line[indent] "\""
+		return "\"" + line[indent] + "\""
 
 def main():
-	with open ('./file') as f:
+	with open (sys.argv[1]) as file:
 		res = "{\n"
 		ind = 0
 
 		while (True):
-			line = file.readline().split(',')
+			line = file.readline()
+			line = line.split(',')
 
 			# End of an object
 			if (getIndent(line) < ind):
-				ind--
+				ind = ind - 1
 				res += indent(ind) + "}\n"
 
 			# Beginning of new object
 			if (count(line) == 1):
 				res += "\"" + getValAtColumn(line, getIndent(line)) + "\" : {\n"
-				ind++
+				ind = ind + 1
 
 			# Key-Value pair
 			elif (count(line) == 2):
@@ -68,12 +74,17 @@ def main():
 			# Array
 			elif (count(line) > 2):
 				res += "\"" + line[getIndent(line)] + "\" : ["
-				for 
+				for i in range(getIndent(line) + 1, getIndent(line)+count(line)):
+					res += getValAtColumn(i) 
+					if i != getIndent(line) + count(line): res += ", "
 				res += "]\n"
 
 			# Blank line at end or error
 			else:
+				break
 
+		res += "}"
+		print (res)
 
 if __name__ == "__main__":
 	print('executing CsvToJson')
