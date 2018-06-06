@@ -7,7 +7,7 @@ import glob
 def getIndent(line):
 	ind = 0
 	for str in line:
-		if (str == '' or str.strip() == str):
+		if (str is None):
 			ind = ind + 1
 		else:
 			print(line, " -- indent: ", ind)
@@ -18,9 +18,11 @@ def getIndent(line):
 # Returns the number of non-empty values on this line of csv. Assumes there are no empty strings in-between.
 def count(line):
 	count = 0
+	print(line)
 	for str in line:
-		if (str == '' or str.strip() != str):
+		if (str.strip()):
 			count = count + 1
+	print("  ",line," count: ", count)
 	return count
 
 # Returns whitespace to indent the output file
@@ -75,7 +77,7 @@ def main():
 			elif (count(line) > 2):
 				res += "\"" + line[getIndent(line)] + "\" : ["
 				for i in range(getIndent(line) + 1, getIndent(line)+count(line)):
-					res += getValAtColumn(i) 
+					res += getValAtColumn(line, i) 
 					if i != getIndent(line) + count(line): res += ", "
 				res += "]\n"
 
