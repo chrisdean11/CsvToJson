@@ -13,8 +13,6 @@
     "key5_object" : 
     {
       "key1_str" : "str"
-    },
-    "key6_str" : "string"
-  },
-  "key6_int" : 42
+    }
+  }
 }

@@ -50,12 +50,16 @@ def stripComma(res):
 	# Special case of last character 
 	if res[-1] == ',':
 		return res[:-1]
+	# May need to go back multiple spaces and a newline to find the last comma
 	for i in range(1, len(res)):
 		# If the last line was the end of an object, it won't have a comma at the end
 		if res[-i] == '}':
 			return res
 		if res[-i] == ',':
 			return res[:-i] + res[-i+1:]
+
+def endObject(res, ind):
+	return stripComma(res) + indent(ind) + "},\n"
 
 def main():
 	with open (sys.argv[1]) as file:
@@ -72,8 +76,7 @@ def main():
 			# End of an object
 			if (lineIndent < ind):
 				ind = ind - 1
-				res = stripComma(res)
-				res += indent(ind) + "},\n"
+				res = endObject(res, ind)
 
 			# Beginning of new object
 			if (count(line) == 1):
@@ -97,14 +100,19 @@ def main():
 			else:
 				break
 
+		while ind != 0:
+			ind = ind - 1
+			res = endObject(res, ind)
+
 		# Get rid of last comma added
 		res = stripComma(res)
 		res += "}"
 		print (res)
 
 		# Write to file
-		base = os.path.basename(sys.argv[1])
-		filename = os.path.splitext(base)[0] + '.json'
+		#base = os.path.basename(sys.argv[1])
+		#filename = os.path.splitext(base)[0] + '.json'
+		filename = sys.argv[2]
 		print(filename)
 		resFile = open(filename, "w")
 		resFile.write(res)

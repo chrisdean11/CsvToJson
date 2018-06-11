@@ -10,5 +10,3 @@ key5_object,,,,,,
 ,key4_array,val1,val2,val3,val4,val5
 ,key5_object,,,,,
 ,,key1_str,str,,,
-,key6_str,string,,,,
-key6_int,42,,,,,
